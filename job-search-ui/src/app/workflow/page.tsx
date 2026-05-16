@@ -139,6 +139,7 @@ export default function WorkflowPage() {
     // Step 2: Claude Evaluator
     setNodeStatus('evaluate', 'running')
     addLog('Sending to Claude claude-sonnet-4-6 for evaluation...')
+    let latestEval: Record<string, unknown> = {}
     try {
       const evalRes = await fetch('/api/evaluate', {
         method: 'POST',
@@ -146,6 +147,7 @@ export default function WorkflowPage() {
         body: JSON.stringify({ jobDescription: jd, model }),
       })
       const evalData = await evalRes.json()
+      latestEval = evalData
       setEvaluation(evalData)
       setNodeStatus('evaluate', 'done', JSON.stringify(evalData))
       addLog(`Evaluation complete — score ${evalData.score}/5, grade ${evalData.grade}`)
@@ -160,9 +162,8 @@ export default function WorkflowPage() {
     setNodeStatus('ats', 'running')
     addLog('Extracting ATS keywords and calculating match score...')
     await delay(700)
-    const evalData = evaluation ?? {}
-    const matched = (evalData.matchedKeywords as string[] | undefined) ?? []
-    const missing = (evalData.missingKeywords as string[] | undefined) ?? []
+    const matched = (latestEval.matchedKeywords as string[] | undefined) ?? []
+    const missing = (latestEval.missingKeywords as string[] | undefined) ?? []
     setNodeStatus('ats', 'done', `${matched.length} matched, ${missing.length} gaps`)
     addLog(`ATS: ${matched.length} keywords matched, ${missing.length} missing`)
 
