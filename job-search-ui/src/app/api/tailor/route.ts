@@ -2,8 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import OpenAI from 'openai'
 import { getCV } from '@/lib/cv'
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+export const dynamic = 'force-dynamic'
 
 function buildPrompt(jobDescription: string, cv: string): string {
   return `You are an expert resume writer and ATS optimization specialist.
@@ -27,6 +26,8 @@ Output only the tailored resume in markdown format. Start with the candidate's n
 }
 
 export async function POST(req: Request) {
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const { jobDescription, model = 'claude' } = await req.json()
   const cv = getCV()
   const prompt = buildPrompt(jobDescription, cv)
