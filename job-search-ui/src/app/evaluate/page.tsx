@@ -167,6 +167,7 @@ export default function EvaluatePage() {
             </button>
           )}
         </div>
+      </div>
 
       {/* Main split view */}
       <div className="flex-1 flex overflow-hidden">
